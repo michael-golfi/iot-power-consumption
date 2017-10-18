@@ -27,7 +27,7 @@
       "args": {
         "sensorName": "fridgeA",
         "macAddress": "01:01:01:01:01:01",
-        "dataSetPath": "data/FridgeDataSequences/FridgeA-meter4_2016.csv"
+        "dataSetPath": "data/FridgeA-meter4_2016.csv"
       }
     }
   ],

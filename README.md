@@ -1,24 +1,29 @@
-# Fridge Data
+# IoT Power Consumtion
 
 ## Description
 
-This contains fridge measurements in kW taken at twice hourly and minute intervals.
+The purpose of this project is reading power consumption from refrigerators. This project uses an IoT Edge package to stream data from power sensors into an IoT Edge pipeline, process it and forward it to IoT Hub
 
-## Source
+### Creating a BLE Module
 
-http://traces.cs.umass.edu/index.php/Smart/Smart
+Followed this [Tutorial](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-iot-edge-create-module-js) to create a Node.js BLE module to generate fridge readings from the [UMass Trace Repository](http://traces.cs.umass.edu/index.php/Smart/Smart) and to stream them to the IoT Edge.
 
-## Creating a BLE Module
+### Datastructure
 
-Followed this [Tutorial](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-iot-edge-create-module-js) to create a Node.js BLE module to generate fridge readings from the datasets and to stream them to the IoT Edge.
+The data used in the csv files follows the following format:
 
-## Install
+| Timestamp     | Refrigerator Power Usage (kW) |
+| ------------- | ----------------------------- |
+| 1/1/2016 0:00 | 0.132692222                   |
+
+## Installation
 
 ```bash
-npm install -g yo
-npm install -g generator-az-iot-gw-module
+npm install
+```
 
-mkdir FridgeA && yo az-iot-gw-module
+## Run
 
-# Follow steps...
+```bash
+npm start
 ```
