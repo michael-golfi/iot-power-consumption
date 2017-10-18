@@ -1,0 +1,28 @@
+{
+  "name": "fridge-a",
+  "version": "0.0.0",
+  "description": "BLE Device",
+  "author": {
+    "name": "Michael Golfi"
+  },
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    ""
+  ],
+  "devDependencies": {
+    "azure-iot-gateway": "~1.1.4"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.5.0",
+    "csv": "^1.1.1",
+    "event-stream": "^3.3.4",
+    "line-by-line": "^0.1.5",
+    "stream": "0.0.2",
+    "system-sleep": "^1.3.6",
+    "util": "^0.10.3"
+  }
+}
