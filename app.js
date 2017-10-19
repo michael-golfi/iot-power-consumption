@@ -1,4 +1,4 @@
-(function() {
+(function () {
   'use strict';
 
   const Gateway = require('azure-iot-gateway');

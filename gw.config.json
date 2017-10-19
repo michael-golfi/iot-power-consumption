@@ -7,17 +7,59 @@
   ],
   "modules": [
     {
-      "name": "node_printer",
+      "name": "IotHub",
       "loader": {
-        "name": "node",
+        "name": "native",
         "entrypoint": {
-          "main.path": "devices/printer.js"
+          "module.path": "iothub"
         }
       },
-      "args": null
+      "args": {
+        "IoTHubName": "migolfi-power-consumption",
+        "IoTHubSuffix": "azure-devices.net",
+        "Transport": "HTTP"
+      }
     },
     {
-      "name": "node_sensor",
+      "name": "mapping",
+      "loader": {
+        "name": "native",
+        "entrypoint": {
+          "module.path": "identity_map"
+        }
+      },
+      "args": [
+        {
+          "macAddress": "01:01:01:01:01:01",
+          "deviceId": "fridgeA",
+          "deviceKey": "vwiUXBic57gSSGTPA8bmA1eF5HqwpASSbjzAoDW30KU="
+        },
+        {
+          "macAddress": "02:02:02:02:02:02",
+          "deviceId": "fridgeBM1",
+          "deviceKey": "Am/W1n2VoTqShBEM7/G1DhDG5tEaeDFrJa/kxxkTKYo="
+        },
+        {
+          "macAddress": "03:03:03:03:03:03",
+          "deviceId": "fridgeBM2",
+          "deviceKey": "gjC6dJzACOYRDcyoGzNYan5ZsUkMDGgiM5IPkbHZ0UU="
+        }
+      ]
+    },
+    {
+      "name": "Logger",
+      "loader": {
+        "name": "native",
+        "entrypoint": {
+          "module.path": "logger"
+        }
+      },
+      "args": {
+        "filename": "deviceCloudUploadGatewaylog.log"
+      }
+    },
+    {
+      "name": "fridgeA",
       "loader": {
         "name": "node",
         "entrypoint": {
@@ -29,12 +71,60 @@
         "macAddress": "01:01:01:01:01:01",
         "dataSetPath": "data/FridgeA-meter4_2016.csv"
       }
+    },
+    {
+      "name": "fridgeBM1",
+      "loader": {
+        "name": "node",
+        "entrypoint": {
+          "main.path": "devices/fridge.js"
+        }
+      },
+      "args": {
+        "sensorName": "fridgeBM1",
+        "macAddress": "02:02:02:02:02:02",
+        "dataSetPath": "data/FridgeB-meter1_2016.csv"
+      }
+    },
+    {
+      "name": "fridgeBM2",
+      "loader": {
+        "name": "node",
+        "entrypoint": {
+          "main.path": "devices/fridge.js"
+        }
+      },
+      "args": {
+        "sensorName": "fridgeBM2",
+        "macAddress": "03:03:03:03:03:03",
+        "dataSetPath": "data/FridgeB-meter2_2016.csv"
+      }
     }
   ],
   "links": [
     {
-      "source": "node_sensor",
-      "sink": "node_printer"
+      "source": "fridgeA",
+      "sink": "mapping"
+    },
+    {
+      "source": "fridgeBM1",
+      "sink": "mapping"
+    },
+    {
+      "source": "fridgeBM2",
+      "sink": "mapping"
+    },
+    {
+      "source": "mapping",
+      "sink": "compressor"
+    },    
+    {
+      "source": "compressor",
+      "sink": "IotHub"
+    },
+    {
+      "source": "*",
+      "sink": "Logger"
     }
   ]
 }
