@@ -9,6 +9,7 @@
   "dependencies": {
     "azure-iot-gateway": "~1.1.4",
     "csv": "^1.1.1",
-    "line-by-line": "^0.1.5"
+    "line-by-line": "^0.1.5",
+    "uuid": "^3.1.0"
   }
 }

@@ -31,18 +31,8 @@
       "args": [
         {
           "macAddress": "01:01:01:01:01:01",
-          "deviceId": "fridgeA",
-          "deviceKey": "vwiUXBic57gSSGTPA8bmA1eF5HqwpASSbjzAoDW30KU="
-        },
-        {
-          "macAddress": "02:02:02:02:02:02",
-          "deviceId": "fridgeBM1",
-          "deviceKey": "Am/W1n2VoTqShBEM7/G1DhDG5tEaeDFrJa/kxxkTKYo="
-        },
-        {
-          "macAddress": "03:03:03:03:03:03",
-          "deviceId": "fridgeBM2",
-          "deviceKey": "gjC6dJzACOYRDcyoGzNYan5ZsUkMDGgiM5IPkbHZ0UU="
+          "deviceId": "fridge",
+          "deviceKey": "vTUMR3OAHOAGTyRkrBoDq+qaYLYnCQfIsJRo2Lpz7lY="
         }
       ]
     },
@@ -59,69 +49,29 @@
       }
     },
     {
-      "name": "fridgeA",
+      "name": "fridge",
       "loader": {
         "name": "node",
         "entrypoint": {
-          "main.path": "devices/fridge.js"
+          "main.path": "devices/power.js"
         }
       },
       "args": {
-        "sensorName": "fridgeA",
+        "sensorName": "fridge",
         "macAddress": "01:01:01:01:01:01",
-        "dataSetPath": "data/FridgeA-meter4_2016.csv"
-      }
-    },
-    {
-      "name": "fridgeBM1",
-      "loader": {
-        "name": "node",
-        "entrypoint": {
-          "main.path": "devices/fridge.js"
-        }
-      },
-      "args": {
-        "sensorName": "fridgeBM1",
-        "macAddress": "02:02:02:02:02:02",
-        "dataSetPath": "data/FridgeB-meter1_2016.csv"
-      }
-    },
-    {
-      "name": "fridgeBM2",
-      "loader": {
-        "name": "node",
-        "entrypoint": {
-          "main.path": "devices/fridge.js"
-        }
-      },
-      "args": {
-        "sensorName": "fridgeBM2",
-        "macAddress": "03:03:03:03:03:03",
-        "dataSetPath": "data/FridgeB-meter2_2016.csv"
+        "dataSetPath": "data/ieee-pes-iss.csv"
       }
     }
   ],
   "links": [
     {
-      "source": "fridgeA",
-      "sink": "mapping"
-    },
-    {
-      "source": "fridgeBM1",
-      "sink": "mapping"
-    },
-    {
-      "source": "fridgeBM2",
+      "source": "fridge",
       "sink": "mapping"
     },
     {
       "source": "mapping",
-      "sink": "compressor"
-    },    
-    {
-      "source": "compressor",
       "sink": "IotHub"
-    },
+    },    
     {
       "source": "*",
       "sink": "Logger"
