@@ -54,6 +54,19 @@
                 "description": "Stream Analytics Job Name, can contain alphanumeric characters and hypen and must be 3-63 characters long"
             }
         },
+        "streamAnalyticsJobSku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Standard",
+                "Free",
+                "P10Premium",
+                "P20Premium"
+            ],
+            "metadata": {
+                "description": "Stream Analytis SKU"
+            }
+        },
         "numberOfStreamingUnits": {
             "type": "int",
             "minValue": 1,
@@ -107,11 +120,45 @@
             "metadata": {
                 "description": "The key to be used as a partitioning key for the dataset. Should split data into more or less equal sizes. Should start with a '/' and not trail with a slash."
             }
+        },
+        "powerbiUserDisplayName": {
+            "type": "string",
+            "minLength": 3,
+            "metadata": {
+                "description": "Display name for connecting Stream Analytics to PowerBI"
+            }
+        },
+        "powerbiUserLoginName": {
+            "type": "string",
+            "minLength": 3,
+            "defaultValue": "<user>@domain.com",
+            "metadata": {
+                "description": "Your username for connecting Stream Analytics to PowerBI"
+            }
+        },
+        "powerbiWorkspaceName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 63,
+            "metadata": {
+                "description": "A unique name for the PowerBI workspace collection. It should match with the following regular expression: ^(?:[a-zA-Z0-9]+-?)+$ or it will raise an error. "
+            }
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": [
+                "S1",
+                "s1"
+            ],
+            "metadata": {
+                "description": "provide the sku for powerbi workspace collection."
+            }
         }
     },
     "variables": {
         "cosmosApiVersion": "[providers('Microsoft.DocumentDB','databaseAccounts').apiVersions[0]]",
-        "hubApiVersion": "[providers('Microsoft.Devices','IotHubs').apiVersions[0]]"
+        "hubApiVersion": "[providers('Microsoft.Devices','IotHubs').apiVersions[0]]",
+        "powerBIVersion": "[providers('Microsoft.PowerBI','workspaceCollections').apiVersions[0]]"
     },
     "resources": [
         {
@@ -139,7 +186,7 @@
             "location": "[resourceGroup().location]",
             "properties": {
                 "sku": {
-                    "name": "standard"
+                    "name": "[parameters('streamAnalyticsJobSku')]"
                 },
                 "outputErrorPolicy": "stop",
                 "eventsOutOfOrderPolicy": "adjust",
@@ -199,12 +246,41 @@
                             "etag": null,
                             "serialization": null
                         }
+                    },
+                    {
+                        "name": "PBI",
+                        "properties": {
+                            "dataSource": {
+                                "type": "PowerBI",
+                                "outputPowerBISource": {
+                                    "dataSet": "HeartDataSet",
+                                    "table": "HeartDataTable",
+                                    "groupId": "",
+                                    "groupName": "My Workspace",
+                                    "refreshToken": "dummytoken",
+                                    "tokenUserDisplayName": "[parameters('powerbiUserDisplayName')]",
+                                    "tokenUserPrincipalName": "[parameters('powerbiUserLoginName')]"
+                                },
+                                "properties": {
+                                    "dataSet": "HeartDataSet",
+                                    "table": "HeartDataTable",
+                                    "groupId": "",
+                                    "groupName": "My Workspace",
+                                    "refreshToken": "dummytoken",
+                                    "tokenUserDisplayName": "[parameters('powerbiUserDisplayName')]",
+                                    "tokenUserPrincipalName": "[parameters('powerbiUserLoginName')]"
+                                }
+                            },
+                            "serialization": null,
+                            "diagnostics": null
+                        }
                     }
                 ]
             },
             "dependsOn": [
                 "[concat('Microsoft.Devices/IotHubs/', parameters('iotHubName'))]",
-                "[concat('Microsoft.DocumentDB/databaseAccounts/', parameters('cosmosAccountName'))]"
+                "[concat('Microsoft.DocumentDB/databaseAccounts/', parameters('cosmosAccountName'))]",
+                "[concat('Microsoft.PowerBI/workspaceCollections/', parameters('powerbiWorkspaceName'))]"
             ]
         },
         {
@@ -213,7 +289,9 @@
             "name": "[parameters('cosmosAccountName')]",
             "apiVersion": "[variables('cosmosApiVersion')]",
             "location": "[resourceGroup().location]",
-            "tags": {},
+            "tags": {
+                "defaultExperience": "Table"
+            },
             "scale": null,
             "properties": {
                 "databaseAccountOfferType": "Standard",
@@ -224,11 +302,23 @@
                 },
                 "name": "[parameters('cosmosDatabaseName')]"
             }
+        },
+        {
+            "apiVersion": "[variables('powerBIVersion')]",
+            "type": "Microsoft.PowerBI/workspaceCollections",
+            "name": "[parameters('powerbiWorkspaceName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('sku')]"
+            },
+            "tags": {
+                "ObjectName": "[parameters('powerbiWorkspaceName')]"
+            }
         }
     ],
     "outputs": {
-        "iotHubKeys": {
-            "value": "[listKeys(resourceId('Microsoft.Devices/iotHubs', parameters('iotHubName')), variables('hubApiVersion'))]",
+        "SharedAccessPolicyKey": {
+            "value": "[listKeys(resourceId('Microsoft.Devices/IotHubs/IotHubKeys', parameters('iotHubName'), 'iothubowner'), variables('hubApiVersion')).primaryKey]",
             "type": "object"
         },
         "cosmosKeys": {
